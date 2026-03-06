@@ -1,0 +1,9 @@
+
+Arduino IDE >= 2.0
+ESP32 Board Package
+
+Libraries:
+WiFi.h
+WebServer.h
+DHT sensor library
+Adafruit Unified Sensor
