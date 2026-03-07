@@ -1,53 +1,38 @@
-
 #include <WiFi.h>
 #include <WebServer.h>
-#include "DHT.h"
+#include "sensor_manager.h"
+#include "../config/config.h"
 
-#define DHTPIN 4
-#define DHTTYPE DHT11
-
-const char* ssid = "YOUR_WIFI_NAME";
-const char* password = "YOUR_WIFI_PASSWORD";
-
-DHT dht(DHTPIN, DHTTYPE);
 WebServer server(80);
 
 void handleRoot() {
+  server.send(200, "text/html", "<h1>ESP32 Weather API Running</h1>");
+}
 
-  float temperature = dht.readTemperature();
-  float humidity = dht.readHumidity();
+void handleData() {
 
-  String page = "<html><head><title>ESP32 Weather Station</title>";
-  page += "<meta http-equiv='refresh' content='5'>";
-  page += "<style>body{font-family:Arial;text-align:center;margin-top:50px}</style>";
-  page += "</head><body>";
-  page += "<h1>ESP32 Weather Station</h1>";
-  page += "<h2>Temperature: " + String(temperature) + " °C</h2>";
-  page += "<h2>Humidity: " + String(humidity) + " %</h2>";
-  page += "</body></html>";
+  float temp = readTemperature();
+  float hum = readHumidity();
 
-  server.send(200, "text/html", page);
+  String json = "{";
+  json += "\"temperature\":" + String(temp) + ",";
+  json += "\"humidity\":" + String(hum);
+  json += "}";
+
+  server.send(200, "application/json", json);
 }
 
 void setup() {
 
   Serial.begin(115200);
-  dht.begin();
 
-  WiFi.begin(ssid, password);
+  connectWiFi();
 
-  Serial.print("Connecting");
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("Connected");
-  Serial.println(WiFi.localIP());
+  initSensor();
 
   server.on("/", handleRoot);
+  server.on("/data", handleData);
+
   server.begin();
 }
 
