@@ -2,6 +2,7 @@
 # ESP32 Smart Weather Station
 # ESP32 IoT Weather Station 🌦️
 
+
 An Internet of Things (IoT) project that monitors environmental conditions using an ESP32 and a DHT sensor.  
 The ESP32 hosts a web server that displays real-time temperature and humidity data on a dashboard.
 
